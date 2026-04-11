@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<title>Descargar Videos de Instagram Gratis | Reels Downloader PRO</title>
+
+<meta name="description" content="Descarga videos de Instagram, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro. Instagram Downloader PRO online.">
+<meta name="keywords" content="instagram downloader, descargar reels instagram, descargar videos instagram, reels downloader, video downloader gratis">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f1a;
+  color: white;
+}
+
+header {
+  padding: 60px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #3a0ca3, #00ffcc);
+}
+
+header h1 {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.06);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 140px;
+  border-radius: 10px;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #00ffcc;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.video {
+  background: rgba(255,255,255,0.07);
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  word-break: break-all;
+  text-align: left;
+}
+
+.small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.progress-container {
+  width: 100%;
+  height: 18px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffcc, #00aaff);
+  transition: width 0.4s ease;
+}
+
+#status {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.6;
+  font-size: 13px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <h1>🚀 Instagram Downloader GRATIS</h1>
+  <p>Descarga reels, videos y posts sin marca de agua</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📥 Pega tus links de Instagram</h2>
+
+    <textarea id="input" placeholder="https://www.instagram.com/reel/..."></textarea>
+
+    <button onclick="procesar()">📋 Procesar</button>
+    <button onclick="descargar()">⬇️ Descargar</button>
+
+    <div class="progress-container">
+      <div id="bar" class="progress-bar"></div>
+    </div>
+
+    <p id="status"></p>
+
+    <div id="lista"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔥 Cómo funciona</h2>
+    <p>1. Copia el link de Instagram</p>
+    <p>2. Pégalo aquí arriba</p>
+    <p>3. Descarga el video en segundos</p>
+  </div>
+
+  <div class="card">
+    <h2>📈 SEO Keywords</h2>
+    <p>instagram downloader, descargar reels instagram, video downloader, instagram video sin marca de agua</p>
+  </div>
+
+</div>
+
+<footer>
+  Instagram Downloader PRO © 2026
+</footer>
+
+<script>
+
+let urls = [];
+let jobId = null;
+
+function procesar() {
+  urls = document.getElementById("input").value
+    .split("\n")
+    .map(u => u.trim())
+    .filter(u => u.includes("http"));
+
+  let html = "";
+
+  urls.forEach((u,i)=>{
+    html += `<div class="video">🎬 ${i+1}: ${u}</div>`;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+async function descargar() {
+
+  const res = await fetch("http://localhost:3000/download", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ urls })
+  });
+
+  const data = await res.json();
+  jobId = data.jobId;
+
+  track();
+}
+
+async function track() {
+
+  const bar = document.getElementById("bar");
+  const status = document.getElementById("status");
+
+  const interval = setInterval(async () => {
+
+    const res = await fetch(`http://localhost:3000/status/${jobId}`);
+    const data = await res.json();
+
+    bar.style.width = data.progress + "%";
+    status.innerText = data.progress + "% - " + data.status;
+
+    let html = "";
+
+    data.items.forEach((v,i)=>{
+      let icon = "⏳";
+      if(v.status==="done") icon="✅";
+      if(v.status==="error") icon="❌";
+
+      html += `<div class="video">${icon} ${v.title || v.url}</div>`;
+    });
+
+    document.getElementById("lista").innerHTML = html;
+
+    if(data.status==="done"){
+      clearInterval(interval);
+      status.innerText = "🎉 Descarga completada";
+      bar.style.width = "100%";
+    }
+
+  },1000);
+}
+
+</script>
+
+</body>
+</html>
