@@ -174,7 +174,7 @@ async function track() {
         ${icon} ${v.title || v.url}
       `;
 
-      // 🔥 BOTÓN DE DESCARGA
+      // 🔥 BOTÓN DESCARGA INDIVIDUAL
       if(v.status === "done"){
         html += `
           <br>
@@ -193,6 +193,15 @@ async function track() {
       clearInterval(interval);
       status.innerText = "🎉 Descarga completada";
       bar.style.width = "100%";
+
+      // 🔥 BOTÓN ZIP
+      document.getElementById("lista").innerHTML += `
+        <div style="margin-top:20px;">
+          <a class="download-btn" href="/download-zip/${jobId}">
+            📦 Descargar todo en ZIP
+          </a>
+        </div>
+      `;
     }
 
   },1000);
