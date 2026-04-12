@@ -5,9 +5,7 @@
 
 <title>Descargar Videos de Instagram Gratis | Reels Downloader PRO</title>
 
-<meta name="description" content="Descarga videos de Instagram, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro. Instagram Downloader PRO online.">
-<meta name="keywords" content="instagram downloader, descargar reels instagram, descargar videos instagram, reels downloader, video downloader gratis">
-
+<meta name="description" content="Descarga videos de Instagram, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -22,16 +20,6 @@ header {
   padding: 60px 20px;
   text-align: center;
   background: linear-gradient(135deg, #3a0ca3, #00ffcc);
-}
-
-header h1 {
-  font-size: 34px;
-  margin-bottom: 10px;
-}
-
-header p {
-  font-size: 16px;
-  opacity: 0.9;
 }
 
 .container {
@@ -53,7 +41,6 @@ textarea {
   border-radius: 10px;
   border: none;
   padding: 12px;
-  font-size: 14px;
 }
 
 button {
@@ -64,11 +51,6 @@ button {
   background: #00ffcc;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  transform: scale(1.05);
 }
 
 .video {
@@ -77,12 +59,6 @@ button:hover {
   margin: 8px 0;
   border-radius: 10px;
   word-break: break-all;
-  text-align: left;
-}
-
-.small {
-  font-size: 12px;
-  opacity: 0.7;
 }
 
 .progress-container {
@@ -100,18 +76,6 @@ button:hover {
   background: linear-gradient(90deg, #00ffcc, #00aaff);
   transition: width 0.4s ease;
 }
-
-#status {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-footer {
-  text-align: center;
-  padding: 40px;
-  opacity: 0.6;
-  font-size: 13px;
-}
 </style>
 
 </head>
@@ -119,16 +83,16 @@ footer {
 <body>
 
 <header>
-  <h1>🚀 Instagram Downloader GRATIS</h1>
-  <p>Descarga reels, videos y posts sin marca de agua</p>
+  <h1>🚀 InstaBulk</h1>
+  <p>Descarga múltiples videos de Instagram</p>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <h2>📥 Pega tus links de Instagram</h2>
+    <h2>📥 Pega tus links</h2>
 
-    <textarea id="input" placeholder="https://www.instagram.com/reel/..."></textarea>
+    <textarea id="input" placeholder="Un link por línea..."></textarea>
 
     <button onclick="procesar()">📋 Procesar</button>
     <button onclick="descargar()">⬇️ Descargar</button>
@@ -138,29 +102,14 @@ footer {
     </div>
 
     <p id="status"></p>
-
     <div id="lista"></div>
-  </div>
-
-  <div class="card">
-    <h2>🔥 Cómo funciona</h2>
-    <p>1. Copia el link de Instagram</p>
-    <p>2. Pégalo aquí arriba</p>
-    <p>3. Descarga el video en segundos</p>
-  </div>
-
-  <div class="card">
-    <h2>📈 SEO Keywords</h2>
-    <p>instagram downloader, descargar reels instagram, video downloader, instagram video sin marca de agua</p>
   </div>
 
 </div>
 
-<footer>
-  Instagram Downloader PRO © 2026
-</footer>
-
 <script>
+
+const API = window.location.origin;
 
 let urls = [];
 let jobId = null;
@@ -172,7 +121,6 @@ function procesar() {
     .filter(u => u.includes("http"));
 
   let html = "";
-
   urls.forEach((u,i)=>{
     html += `<div class="video">🎬 ${i+1}: ${u}</div>`;
   });
@@ -182,7 +130,7 @@ function procesar() {
 
 async function descargar() {
 
-  const res = await fetch("http://localhost:3000/download", {
+  const res = await fetch(API + "/download", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ urls })
@@ -201,7 +149,7 @@ async function track() {
 
   const interval = setInterval(async () => {
 
-    const res = await fetch(`http://localhost:3000/status/${jobId}`);
+    const res = await fetch(API + "/status/" + jobId);
     const data = await res.json();
 
     bar.style.width = data.progress + "%";
@@ -209,7 +157,7 @@ async function track() {
 
     let html = "";
 
-    data.items.forEach((v,i)=>{
+    data.items.forEach((v)=>{
       let icon = "⏳";
       if(v.status==="done") icon="✅";
       if(v.status==="error") icon="❌";
