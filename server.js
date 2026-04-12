@@ -15,25 +15,14 @@ app.use(express.static("public"));
 const videosDir = path.join(__dirname, "videos");
 const cookiesPath = path.join(__dirname, "cookies.txt");
 
-// Detectar comando Python automáticamente
 const PYTHON_CMD = process.env.RENDER ? "python3" : "python";
 
 if (!fs.existsSync(videosDir)) {
   fs.mkdirSync(videosDir);
 }
 
-/*
-----------------------------------------
-📦 JOBS
-----------------------------------------
-*/
 let jobs = {};
 
-/*
-----------------------------------------
-📥 CREATE DOWNLOAD JOB
-----------------------------------------
-*/
 app.post("/download", (req, res) => {
   const { urls } = req.body;
 
@@ -60,11 +49,6 @@ app.post("/download", (req, res) => {
   res.json({ ok: true, jobId });
 });
 
-/*
-----------------------------------------
-⚙️ PROCESS JOB
-----------------------------------------
-*/
 function processJob(jobId) {
   const job = jobs[jobId];
   let i = 0;
@@ -80,18 +64,15 @@ function processJob(jobId) {
     item.status = "downloading";
     job.status = "downloading";
 
-    // 🔥 GET TITLE
     const titleCmd = `${PYTHON_CMD} -m yt_dlp --cookies "${cookiesPath}" --get-title "${item.url}"`;
 
-    exec(titleCmd, (err, stdout, stderr) => {
+    exec(titleCmd, (err, stdout) => {
       let title = `video_${Date.now()}_${i}`;
 
       if (!err && stdout) {
         title = stdout.toString().trim()
           .replace(/[^\w\s\-]/g, "")
           .slice(0, 60);
-      } else {
-        console.error("ERROR TITLE:", stderr);
       }
 
       const safeTitle = `${title}_${Date.now()}`;
@@ -100,16 +81,10 @@ function processJob(jobId) {
       item.title = safeTitle;
       item.file = `${safeTitle}.mp4`;
 
-      // 🔥 DOWNLOAD VIDEO CON COOKIES
-      const cmd = `${PYTHON_CMD} -m yt_dlp --cookies "${cookiesPath}" --sleep-interval 2 --max-sleep-interval 5 -o "${finalFile}" "${item.url}"`;
+      const cmd = `${PYTHON_CMD} -m yt_dlp --cookies "${cookiesPath}" -o "${finalFile}" "${item.url}"`;
 
-      exec(cmd, (err2, stdout2, stderr2) => {
-        if (err2) {
-          console.error("ERROR DOWNLOAD:", stderr2);
-          item.status = "error";
-        } else {
-          item.status = "done";
-        }
+      exec(cmd, (err2) => {
+        item.status = err2 ? "error" : "done";
 
         i++;
         job.progress = Math.floor((i / job.items.length) * 100);
@@ -122,71 +97,25 @@ function processJob(jobId) {
   next();
 }
 
-/*
-----------------------------------------
-📊 STATUS
-----------------------------------------
-*/
 app.get("/status/:id", (req, res) => {
   const job = jobs[req.params.id];
-
   if (!job) return res.status(404).json({ error: "not found" });
-
   res.json(job);
 });
 
-/*
-----------------------------------------
-📁 LIST VIDEOS
-----------------------------------------
-*/
-app.get("/videos", (req, res) => {
-  fs.readdir(videosDir, (err, files) => {
-    if (err) return res.send("error");
-
-    let html = "<h1>📁 Videos</h1>";
-
-    files.forEach(file => {
-      html += `<p><a href="/video/${file}" target="_blank">${file}</a></p>`;
-    });
-
-    res.send(html);
-  });
-});
-
-/*
-----------------------------------------
-🎬 STREAM VIDEO
-----------------------------------------
-*/
 app.get("/video/:name", (req, res) => {
   const file = path.join(videosDir, req.params.name);
-
-  if (!fs.existsSync(file)) {
-    return res.status(404).send("File not found");
-  }
-
+  if (!fs.existsSync(file)) return res.status(404).send("File not found");
   res.sendFile(file);
 });
 
-/*
-----------------------------------------
-📦 DOWNLOAD ZIP
-----------------------------------------
-*/
 app.get("/download-zip/:id", (req, res) => {
   const job = jobs[req.params.id];
-
-  if (!job) {
-    return res.status(404).send("Job not found");
-  }
+  if (!job) return res.status(404).send("Job not found");
 
   res.attachment(`videos_${job.id}.zip`);
 
-  const archive = archiver("zip", {
-    zlib: { level: 9 }
-  });
-
+  const archive = archiver("zip", { zlib: { level: 9 } });
   archive.pipe(res);
 
   job.items.forEach(item => {
@@ -201,11 +130,6 @@ app.get("/download-zip/:id", (req, res) => {
   archive.finalize();
 });
 
-/*
-----------------------------------------
-🚀 START
-----------------------------------------
-*/
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
