@@ -102,6 +102,12 @@ button {
 
     <textarea id="input" placeholder="Un link por línea..."></textarea>
 
+    <!-- 🔥 ANUNCIO PRINCIPAL (ALTO RENDIMIENTO) -->
+    <div style="margin-top:15px;">
+      <script async="async" data-cfasync="false" src="https://pl29133236.profitablecpmratenetwork.com/493d8bc3dc3a5fe7bc6d4cd9567e7a77/invoke.js"></script>
+      <div id="container-493d8bc3dc3a5fe7bc6d4cd9567e7a77"></div>
+    </div>
+
     <button onclick="procesar()">📋 Procesar</button>
     <button onclick="descargar()">⬇️ Descargar</button>
 
@@ -165,7 +171,7 @@ async function track() {
 
     let html = "";
 
-    data.items.forEach((v)=>{
+    data.items.forEach((v,i)=>{
       let icon = "⏳";
       if(v.status==="done") icon="✅";
       if(v.status==="error") icon="❌";
@@ -174,7 +180,6 @@ async function track() {
         ${icon} ${v.title || v.url}
       `;
 
-      // 🔥 BOTÓN DESCARGA INDIVIDUAL
       if(v.status === "done"){
         html += `
           <br>
@@ -185,6 +190,17 @@ async function track() {
       }
 
       html += `</div>`;
+
+      // 🔥 ANUNCIO ENTRE RESULTADOS (MUCHO DINERO)
+      if(i === 1){
+        html += `
+          <div style="margin:10px 0;">
+            <script async="async" data-cfasync="false" src="https://pl29133236.profitablecpmratenetwork.com/493d8bc3dc3a5fe7bc6d4cd9567e7a77/invoke.js"></script>
+            <div id="container-493d8bc3dc3a5fe7bc6d4cd9567e7a77"></div>
+          </div>
+        `;
+      }
+
     });
 
     document.getElementById("lista").innerHTML = html;
@@ -194,7 +210,6 @@ async function track() {
       status.innerText = "🎉 Descarga completada";
       bar.style.width = "100%";
 
-      // 🔥 BOTÓN ZIP
       document.getElementById("lista").innerHTML += `
         <div style="margin-top:20px;">
           <a class="download-btn" href="/download-zip/${jobId}">
