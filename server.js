@@ -3,6 +3,7 @@ const cors = require("cors");
 const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const archiver = require("archiver");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const videosDir = path.join(__dirname, "videos");
+const cookiesPath = path.join(__dirname, "cookies.txt");
+
+// Detectar comando Python automáticamente
+const PYTHON_CMD = process.env.RENDER ? "python3" : "python";
 
 if (!fs.existsSync(videosDir)) {
   fs.mkdirSync(videosDir);
@@ -75,8 +80,8 @@ function processJob(jobId) {
     item.status = "downloading";
     job.status = "downloading";
 
-    // 🔥 GET TITLE (modo seguro)
-    const titleCmd = `python3 -m yt_dlp --get-title "${item.url}"`;
+    // 🔥 GET TITLE
+    const titleCmd = `${PYTHON_CMD} -m yt_dlp --cookies "${cookiesPath}" --get-title "${item.url}"`;
 
     exec(titleCmd, (err, stdout, stderr) => {
       let title = `video_${Date.now()}_${i}`;
@@ -95,8 +100,8 @@ function processJob(jobId) {
       item.title = safeTitle;
       item.file = `${safeTitle}.mp4`;
 
-      // 🔥 DOWNLOAD VIDEO (modo PRO)
-      const cmd = `python3 -m yt_dlp -o "${finalFile}" "${item.url}"`;
+      // 🔥 DOWNLOAD VIDEO CON COOKIES
+      const cmd = `${PYTHON_CMD} -m yt_dlp --cookies "${cookiesPath}" --sleep-interval 2 --max-sleep-interval 5 -o "${finalFile}" "${item.url}"`;
 
       exec(cmd, (err2, stdout2, stderr2) => {
         if (err2) {
@@ -142,11 +147,7 @@ app.get("/videos", (req, res) => {
     let html = "<h1>📁 Videos</h1>";
 
     files.forEach(file => {
-      html += `
-        <p>
-          <a href="/video/${file}" target="_blank">${file}</a>
-        </p>
-      `;
+      html += `<p><a href="/video/${file}" target="_blank">${file}</a></p>`;
     });
 
     res.send(html);
@@ -166,6 +167,38 @@ app.get("/video/:name", (req, res) => {
   }
 
   res.sendFile(file);
+});
+
+/*
+----------------------------------------
+📦 DOWNLOAD ZIP
+----------------------------------------
+*/
+app.get("/download-zip/:id", (req, res) => {
+  const job = jobs[req.params.id];
+
+  if (!job) {
+    return res.status(404).send("Job not found");
+  }
+
+  res.attachment(`videos_${job.id}.zip`);
+
+  const archive = archiver("zip", {
+    zlib: { level: 9 }
+  });
+
+  archive.pipe(res);
+
+  job.items.forEach(item => {
+    if (item.status === "done") {
+      const filePath = path.join(videosDir, item.file);
+      if (fs.existsSync(filePath)) {
+        archive.file(filePath, { name: item.file });
+      }
+    }
+  });
+
+  archive.finalize();
 });
 
 /*
