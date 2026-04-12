@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>Descargar Videos de Instagram Gratis | Reels Downloader PRO</title>
-
-<meta name="description" content="Descarga videos de Instagram, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro.">
+<title>InstaBulk - Descarga videos de Instagram</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -17,7 +15,7 @@ body {
 }
 
 header {
-  padding: 60px 20px;
+  padding: 50px 20px;
   text-align: center;
   background: linear-gradient(135deg, #3a0ca3, #00ffcc);
 }
@@ -58,7 +56,17 @@ button {
   padding: 10px;
   margin: 8px 0;
   border-radius: 10px;
-  word-break: break-all;
+}
+
+.download-btn {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: #00ffcc;
+  color: black;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 .progress-container {
@@ -162,7 +170,21 @@ async function track() {
       if(v.status==="done") icon="✅";
       if(v.status==="error") icon="❌";
 
-      html += `<div class="video">${icon} ${v.title || v.url}</div>`;
+      html += `<div class="video">
+        ${icon} ${v.title || v.url}
+      `;
+
+      // 🔥 BOTÓN DE DESCARGA
+      if(v.status === "done"){
+        html += `
+          <br>
+          <a class="download-btn" href="/video/${v.file}" download>
+            ⬇️ Descargar
+          </a>
+        `;
+      }
+
+      html += `</div>`;
     });
 
     document.getElementById("lista").innerHTML = html;
