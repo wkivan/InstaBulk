@@ -6,6 +6,7 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
@@ -74,29 +75,32 @@ function processJob(jobId) {
     item.status = "downloading";
     job.status = "downloading";
 
-    const tempFile = path.join(videosDir, `${jobId}_${i}.mp4`);
+    // 🔥 GET TITLE (modo seguro)
+    const titleCmd = `python3 -m yt_dlp --get-title "${item.url}"`;
 
-    // 🔥 GET TITLE
-    const titleCmd = `yt-dlp --get-title "${item.url}"`;
-
-    exec(titleCmd, (err, stdout) => {
+    exec(titleCmd, (err, stdout, stderr) => {
       let title = `video_${Date.now()}_${i}`;
 
       if (!err && stdout) {
         title = stdout.toString().trim()
           .replace(/[^\w\s\-]/g, "")
-          .slice(0, 80);
+          .slice(0, 60);
+      } else {
+        console.error("ERROR TITLE:", stderr);
       }
 
-      item.title = title;
-      const finalFile = path.join(videosDir, `${title}.mp4`);
-      item.file = `${title}.mp4`;
+      const safeTitle = `${title}_${Date.now()}`;
+      const finalFile = path.join(videosDir, `${safeTitle}.mp4`);
 
-      // 🔥 DOWNLOAD VIDEO
-      const cmd = `yt-dlp -o "${finalFile}" "${item.url}"`;
+      item.title = safeTitle;
+      item.file = `${safeTitle}.mp4`;
 
-      exec(cmd, (err2) => {
+      // 🔥 DOWNLOAD VIDEO (modo PRO)
+      const cmd = `python3 -m yt_dlp -o "${finalFile}" "${item.url}"`;
+
+      exec(cmd, (err2, stdout2, stderr2) => {
         if (err2) {
+          console.error("ERROR DOWNLOAD:", stderr2);
           item.status = "error";
         } else {
           item.status = "done";
@@ -140,7 +144,7 @@ app.get("/videos", (req, res) => {
     files.forEach(file => {
       html += `
         <p>
-          <a href="/video/${file}">${file}</a>
+          <a href="/video/${file}" target="_blank">${file}</a>
         </p>
       `;
     });
@@ -156,6 +160,11 @@ app.get("/videos", (req, res) => {
 */
 app.get("/video/:name", (req, res) => {
   const file = path.join(videosDir, req.params.name);
+
+  if (!fs.existsSync(file)) {
+    return res.status(404).send("File not found");
+  }
+
   res.sendFile(file);
 });
 
