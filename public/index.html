@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 
-<title>InstaBulk - Descarga videos de Instagram</title>
+<title>Descarga multiples videos de Instagram | Reels Downloader</title>
+
+<meta name="description" content="Descarga multiples videos de Instagram a la vez, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro. Instagram Downloader PRO online.">
+<meta name="keywords" content="instagram downloader, descargar reels instagram, descargar videos instagram, reels downloader, video downloader gratis">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -15,10 +19,57 @@ body {
 }
 
 header {
-  padding: 50px 20px;
-  text-align: center;
-  background: linear-gradient(135deg, #3a0ca3, #00ffcc);
+  background: #8254BA;
+  padding: 0.6rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
+
+.header-logo {
+  height: 60px;
+  object-fit: contain;
+}
+
+.hamburger {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.hamburger:hover { background: rgba(255,255,255,0.15); }
+.hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; transition: all 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.tools-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  min-width: 220px;
+  z-index: 500;
+  overflow: hidden;
+}
+.tools-dropdown.open { display: block; }
+.tools-dropdown-header { padding: 10px 16px; font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #f0f0f0; }
+.tools-dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-size: 13px; font-weight: 500; color: #1a1a1a; text-decoration: none; transition: background 0.15s; }
+.tools-dropdown a:hover { background: #f5f0ff; color: #8B5CF6; }
+.tools-dropdown a .tool-icon { font-size: 16px; }
 
 .container {
   max-width: 900px;
@@ -39,6 +90,7 @@ textarea {
   border-radius: 10px;
   border: none;
   padding: 12px;
+  font-size: 14px;
 }
 
 button {
@@ -49,6 +101,11 @@ button {
   background: #00ffcc;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
 }
 
 .video {
@@ -56,17 +113,13 @@ button {
   padding: 10px;
   margin: 8px 0;
   border-radius: 10px;
+  word-break: break-all;
+  text-align: left;
 }
 
-.download-btn {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 8px 12px;
-  background: #00ffcc;
-  color: black;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
+.small {
+  font-size: 12px;
+  opacity: 0.7;
 }
 
 .progress-container {
@@ -84,6 +137,18 @@ button {
   background: linear-gradient(90deg, #00ffcc, #00aaff);
   transition: width 0.4s ease;
 }
+
+#status {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.6;
+  font-size: 13px;
+}
 </style>
 
 </head>
@@ -91,22 +156,24 @@ button {
 <body>
 
 <header>
-  <h1>🚀 InstaBulk</h1>
-  <p>Descarga múltiples videos de Instagram</p>
+  <img class="header-logo" src="header.png" alt="InstaBulk"/>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="tools-dropdown" id="toolsDropdown">
+    <div class="tools-dropdown-header">🛠️ Más herramientas de wkivan</div>
+    <a href="https://wkivan.github.io/Instats/" target="_blank">
+      <span class="tool-icon">📊</span> Instats
+    </a>
+  </div>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <h2>📥 Pega tus links</h2>
+    <h2>📥 Pega tus links de Instagram</h2>
 
-    <textarea id="input" placeholder="Un link por línea..."></textarea>
-
-    <!-- ✅ ANUNCIO (SOLO AQUÍ, NO DINÁMICO) -->
-    <div style="margin-top:15px;">
-      <script async data-cfasync="false" src="https://pl29133236.profitablecpmratenetwork.com/493d8bc3dc3a5fe7bc6d4cd9567e7a77/invoke.js"></script>
-      <div id="container-493d8bc3dc3a5fe7bc6d4cd9567e7a77"></div>
-    </div>
+    <textarea id="input" placeholder="https://www.instagram.com/reel/..."></textarea>
 
     <button onclick="procesar()">📋 Procesar</button>
     <button onclick="descargar()">⬇️ Descargar</button>
@@ -116,25 +183,55 @@ button {
     </div>
 
     <p id="status"></p>
+
     <div id="lista"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔥 Cómo funciona</h2>
+    <p>1. Copia el link de Instagram</p>
+    <p>2. Pégalo aquí arriba</p>
+    <p>3. Descarga el video en segundos</p>
+  </div>
+
+  <div class="card">
+    <h2>📈 SEO Keywords</h2>
+    <p>instagram downloader, descargar reels instagram, video downloader, instagram video sin marca de agua</p>
   </div>
 
 </div>
 
-<script>
+<footer>
+  Instagram Downloader PRO © 2026
+</footer>
 
-const API = window.location.origin;
+<script>
 
 let urls = [];
 let jobId = null;
 
-function procesar() {
+function toggleMenu() {
+  const btn = document.getElementById('hamburger');
+  const dropdown = document.getElementById('toolsDropdown');
+  btn.classList.toggle('open');
+  dropdown.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.hamburger') && !e.target.closest('.tools-dropdown')) {
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('toolsDropdown').classList.remove('open');
+  }
+});
+
+
   urls = document.getElementById("input").value
     .split("\n")
     .map(u => u.trim())
     .filter(u => u.includes("http"));
 
   let html = "";
+
   urls.forEach((u,i)=>{
     html += `<div class="video">🎬 ${i+1}: ${u}</div>`;
   });
@@ -144,7 +241,7 @@ function procesar() {
 
 async function descargar() {
 
-  const res = await fetch(API + "/download", {
+  const res = await fetch("http://localhost:3000/download", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ urls })
@@ -163,7 +260,7 @@ async function track() {
 
   const interval = setInterval(async () => {
 
-    const res = await fetch(API + "/status/" + jobId);
+    const res = await fetch(`http://localhost:3000/status/${jobId}`);
     const data = await res.json();
 
     bar.style.width = data.progress + "%";
@@ -176,20 +273,7 @@ async function track() {
       if(v.status==="done") icon="✅";
       if(v.status==="error") icon="❌";
 
-      html += `<div class="video">
-        ${icon} ${v.title || v.url}
-      `;
-
-      if(v.status === "done"){
-        html += `
-          <br>
-          <a class="download-btn" href="/video/${v.file}" download>
-            ⬇️ Descargar
-          </a>
-        `;
-      }
-
-      html += `</div>`;
+      html += `<div class="video">${icon} ${v.title || v.url}</div>`;
     });
 
     document.getElementById("lista").innerHTML = html;
@@ -198,14 +282,6 @@ async function track() {
       clearInterval(interval);
       status.innerText = "🎉 Descarga completada";
       bar.style.width = "100%";
-
-      document.getElementById("lista").innerHTML += `
-        <div style="margin-top:20px;">
-          <a class="download-btn" href="/download-zip/${jobId}">
-            📦 Descargar todo en ZIP
-          </a>
-        </div>
-      `;
     }
 
   },1000);
