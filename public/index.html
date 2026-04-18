@@ -1,380 +1,212 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instats</title>
-  <link rel="icon" type="image/png" href="favicon-instats.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<meta charset="UTF-8">
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f0f0; color: #1a1a1a; min-height: 100vh; }
+<title>Descarga multiples videos de Instagram | Reels Downloader</title>
+<link rel="icon" type="image/png" href="favicon-instabulk.png">
 
-    .header { background: #8254BA; padding: 0.6rem 2rem; display: flex; align-items: center; justify-content: center; }
-    .header-logo { height: 60px; object-fit: contain; }
+<meta name="description" content="Descarga multiples videos de Instagram a la vez, reels y posts gratis sin marca de agua. Rápido, seguro y sin registro. Instagram Downloader PRO online.">
+<meta name="keywords" content="instagram downloader, descargar reels instagram, descargar videos instagram, reels downloader, video downloader gratis">
 
-    .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .search-card { background: white; border-radius: 14px; padding: 1.5rem; border: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
-    .search-card h2 { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f1a;
+  color: white;
+}
 
-    .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; }
+header {
+  background: #8254BA;
+  padding: 0.6rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-    .field { display: flex; flex-direction: column; gap: 5px; }
-    label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
-    input[type="text"], input[type="number"], select {
-      height: 38px; border: 1.5px solid #ddd; border-radius: 8px;
-      padding: 0 10px; font-size: 13px; background: white; outline: none;
-      transition: border-color 0.2s; width: 100%;
-    }
-    input:focus, select:focus { border-color: #8B5CF6; }
+.header-logo {
+  height: 60px;
+  object-fit: contain;
+}
 
-    .btn { height: 38px; padding: 0 20px; background: #8B5CF6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; white-space: nowrap; width: 100%; }
-    .btn:hover { background: #7C3AED; }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
+.hamburger {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.hamburger:hover { background: rgba(255,255,255,0.15); }
+.hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; transition: all 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* Profile */
-    .profile-card { background: white; border-radius: 14px; padding: 1.25rem; border: 1px solid #e0e0e0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 16px; }
-    .profile-pic { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0; }
-    .profile-info h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .verified { color: #3b82f6; font-size: 14px; }
-    .profile-info p { font-size: 13px; color: #666; margin-top: 2px; }
-    .profile-stats { display: flex; gap: 16px; margin-top: 8px; }
-    .profile-stat { font-size: 13px; }
-    .profile-stat span { font-weight: 600; color: #1a1a1a; }
+.tools-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  min-width: 220px;
+  z-index: 500;
+  overflow: hidden;
+}
+.tools-dropdown.open { display: block; }
+.tools-dropdown-header { padding: 10px 16px; font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #f0f0f0; }
+.tools-dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-size: 13px; font-weight: 500; color: #1a1a1a; text-decoration: none; transition: background 0.15s; }
+.tools-dropdown a:hover { background: #f5f0ff; color: #8B5CF6; }
+.tools-dropdown a .tool-icon { font-size: 16px; }
 
-    /* Stats grid */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
-    .stat-card { background: white; border-radius: 12px; padding: 1rem; border: 1px solid #e0e0e0; }
-    .stat-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-    .stat-value { font-size: 22px; font-weight: 700; color: #1a1a1a; }
-    .stat-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
 
-    /* Chart */
-    .chart-card { background: white; border-radius: 14px; padding: 1.25rem; border: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
-    .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; color: #333; }
-    .chart-wrapper { position: relative; height: 200px; }
+.card {
+  background: rgba(255,255,255,0.06);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
 
-    /* Posts */
-    .posts-header { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 1rem; }
-    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+textarea {
+  width: 100%;
+  height: 140px;
+  border-radius: 10px;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+}
 
-    .post-card { background: white; border-radius: 12px; border: 1px solid #e0e0e0; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-    .post-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+button {
+  margin-top: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #00ffcc;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
 
-    .thumb-wrapper { position: relative; cursor: pointer; }
-    .post-thumb { width: 100%; aspect-ratio: 9/16; object-fit: cover; display: block; background: #f0f0f0; }
-    .rank-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
-    .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0); transition: background 0.2s; }
-    .thumb-wrapper:hover .play-overlay { background: rgba(0,0,0,0.3); }
-    .play-btn { width: 48px; height: 48px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; opacity: 0; transition: opacity 0.2s; }
-    .thumb-wrapper:hover .play-btn { opacity: 1; }
+button:hover {
+  transform: scale(1.05);
+}
 
-    .post-body { padding: 12px; }
-    .post-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-    .post-stat { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: #444; }
-    .engagement-badge { background: #f0fdf4; color: #16a34a; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; border: 1px solid #bbf7d0; }
-    .post-date { font-size: 12px; color: #999; margin-bottom: 6px; }
-    .post-caption { font-size: 12px; color: #555; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+.video {
+  background: rgba(255,255,255,0.07);
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  word-break: break-all;
+  text-align: left;
+}
 
-    .post-actions { display: flex; gap: 8px; }
-    .action-btn { flex: 1; height: 32px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid #ddd; background: white; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: none; color: #444; }
-    .action-btn:hover { border-color: #8B5CF6; color: #8B5CF6; }
-    .action-btn.copy { }
-    .action-btn.copied { border-color: #16a34a; color: #16a34a; }
+.small {
+  font-size: 12px;
+  opacity: 0.7;
+}
 
-    /* Video modal */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
-    .modal.open { display: flex; }
-    .modal-inner { position: relative; max-width: 400px; width: 90%; }
-    .modal-close { position: absolute; top: -40px; right: 0; color: white; background: none; border: none; font-size: 28px; cursor: pointer; line-height: 1; }
-    .modal-inner iframe { width: 100%; aspect-ratio: 9/16; border-radius: 12px; border: none; }
+.progress-container {
+  width: 100%;
+  height: 18px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-top: 15px;
+}
 
-    .status { text-align: center; padding: 3rem 1rem; color: #999; font-size: 15px; }
-    .status.error { color: #e53e3e; }
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffcc, #00aaff);
+  transition: width 0.4s ease;
+}
 
-    /* Hamburger menu */
-    .header { position: relative; justify-content: center; }
-    .hamburger { position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 8px; transition: background 0.2s; }
-    .hamburger:hover { background: rgba(255,255,255,0.15); }
-    .hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; transition: all 0.3s; }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+#status {
+  margin-top: 10px;
+  font-weight: bold;
+}
 
-    .tools-dropdown { display: none; position: absolute; top: 100%; right: 1rem; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); min-width: 220px; z-index: 500; overflow: hidden; }
-    .tools-dropdown.open { display: block; }
-    .tools-dropdown-header { padding: 10px 16px; font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #f0f0f0; }
-    .tools-dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-size: 13px; font-weight: 500; color: #1a1a1a; text-decoration: none; transition: background 0.15s; }
-    .tools-dropdown a:hover { background: #f5f0ff; color: #8B5CF6; }
-    .tools-dropdown a .tool-icon { font-size: 16px; }
-  </style>
+footer {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.6;
+  font-size: 13px;
+}
+</style>
+
 </head>
+
 <body>
 
-<div class="header">
-  <img class="header-logo" src="longlogobynb.png" alt="Instats"/>
+<header>
+  <img class="header-logo" src="header.png" alt="InstaBulk"/>
   <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
   <div class="tools-dropdown" id="toolsDropdown">
     <div class="tools-dropdown-header">🛠️ Más herramientas de wkivan</div>
-    <a href="https://instabulk.onrender.com" target="_blank">
-      <span class="tool-icon">📦</span> Instabulk
+    <a href="https://wkivan.github.io/Instats/" target="_blank">
+      <span class="tool-icon">📊</span> Instats
     </a>
-    <!-- Añade más herramientas aquí -->
   </div>
-</div>
+</header>
 
 <div class="container">
 
-  <div class="search-card">
-    <h2>Filtros</h2>
-    <div class="filters-grid">
-      <div class="field">
-        <label>Usuario</label>
-        <input type="text" id="username" placeholder="@usuario" />
-      </div>
-      <div class="field">
-        <label>Período</label>
-        <select id="period">
-          <option value="1m">Último mes</option>
-          <option value="3m" selected>Últimos 3 meses</option>
-          <option value="6m">Últimos 6 meses</option>
-          <option value="1y">Último año</option>
-          <option value="all">Todo</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Ordenar por</label>
-        <select id="sort">
-          <option value="views">Más vistas</option>
-          <option value="likes">Más likes</option>
-          <option value="engagement">Mejor engagement</option>
-          <option value="comments">Más comentarios</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Vistas mínimas</label>
-        <input type="number" id="min_views" placeholder="0" min="0" value="0" />
-      </div>
-      <div class="field">
-        <label>Likes mínimos</label>
-        <input type="number" id="min_likes" placeholder="0" min="0" value="0" />
-      </div>
-      <div class="field">
-        <label>&nbsp;</label>
-        <button class="btn" id="btn" onclick="buscar()">Analizar</button>
-      </div>
+  <div class="card">
+    <h2>📥 Pega tus links de Instagram</h2>
+
+    <textarea id="input" placeholder="https://www.instagram.com/reel/..."></textarea>
+
+    <button onclick="procesar()">📋 Procesar</button>
+    <button onclick="descargar()">⬇️ Descargar</button>
+
+    <div class="progress-container">
+      <div id="bar" class="progress-bar"></div>
     </div>
+
+    <p id="status"></p>
+
+    <div id="lista"></div>
   </div>
 
-  <div id="profile-section"></div>
-  <div id="stats-section"></div>
-  <div id="chart-section"></div>
-  <div id="posts-section"></div>
+  <div class="card">
+    <h2>🔥 Cómo funciona</h2>
+    <p>1. Copia el link de Instagram del reel o video que quieras descargar y pégalo en el cuadro de texto de arriba. Puedes añadir tantos links como quieras, uno por línea.</p>
+    <br>
+    <p>2. Cuando tengas todos los links listos, pulsa <strong>Procesar</strong> para que el sistema los prepare.</p>
+    <br>
+    <p>3. Espera unos segundos y pulsa <strong>Descargar</strong>. Los videos se descargarán sin marca de agua, gratis y al instante.</p>
+  </div>
 
 </div>
 
-<!-- Modal video -->
-<div class="modal" id="modal" onclick="closeModal(event)">
-  <div class="modal-inner">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <iframe id="modal-iframe" src="" allowfullscreen></iframe>
-  </div>
-</div>
+<footer>
+  InstaBulk © 2026 · by wkivan
+</footer>
 
 <script>
-let chartInstance = null;
 
-function fmt(n) {
-  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
-  return n.toLocaleString();
-}
-
-function fmtDate(dateStr) {
-  const d = new Date(dateStr + ' UTC');
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function openVideo(shortcode) {
-  document.getElementById('modal-iframe').src = `https://www.instagram.com/reel/${shortcode}/embed/`;
-  document.getElementById('modal').classList.add('open');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal') || e.target.classList.contains('modal-close')) {
-    document.getElementById('modal').classList.remove('open');
-    document.getElementById('modal-iframe').src = '';
-  }
-}
-
-function copyUrl(url, btn) {
-  navigator.clipboard.writeText(url).then(() => {
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '🔗 Copiar URL'; btn.classList.remove('copied'); }, 2000);
-  });
-}
-
-function renderChart(chartData) {
-  const ctx = document.getElementById('viewsChart').getContext('2d');
-  if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: chartData.map(d => d.date),
-      datasets: [{
-        label: 'Vistas',
-        data: chartData.map(d => d.views),
-        backgroundColor: 'rgba(139, 92, 246, 0.7)',
-        borderRadius: 4,
-      }, {
-        label: 'Likes',
-        data: chartData.map(d => d.likes),
-        backgroundColor: 'rgba(236, 72, 153, 0.5)',
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { labels: { font: { size: 12 } } } },
-      scales: {
-        x: { ticks: { maxTicksLimit: 8, font: { size: 11 } } },
-        y: { ticks: { font: { size: 11 }, callback: v => fmt(v) } }
-      }
-    }
-  });
-}
-
-async function buscar() {
-  const username = document.getElementById("username").value.trim().replace(/^@/, "");
-  const period = document.getElementById("period").value;
-  const sort = document.getElementById("sort").value;
-  const min_views = document.getElementById("min_views").value || 0;
-  const min_likes = document.getElementById("min_likes").value || 0;
-  const btn = document.getElementById("btn");
-
-  if (!username) { alert("Introduce un nombre de usuario"); return; }
-
-  btn.disabled = true;
-  btn.textContent = "Analizando...";
-  ['profile-section','stats-section','chart-section','posts-section'].forEach(id => {
-    document.getElementById(id).innerHTML = '';
-  });
-  document.getElementById('posts-section').innerHTML = `<div class="status">Cargando perfil de @${username}...</div>`;
-
-  try {
-    const url = `https://instabulk.onrender.com/analyze?username=${encodeURIComponent(username)}&period=${period}&sort=${sort}&min_views=${min_views}&min_likes=${min_likes}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!res.ok || data.error) {
-      document.getElementById('posts-section').innerHTML = `<div class="status error">⚠️ ${data.error || "Error desconocido"}</div>`;
-      return;
-    }
-
-    const { profile, stats, chart_data, posts } = data;
-
-    // Perfil
-    document.getElementById('profile-section').innerHTML = `
-      <div class="profile-card">
-        <img class="profile-pic" src="${profile.profile_pic}" onerror="this.style.display='none'"/>
-        <div class="profile-info">
-          <h2>${profile.full_name || profile.username} ${profile.is_verified ? '<span class="verified">✓</span>' : ''}</h2>
-          <p>@${profile.username}</p>
-          <div class="profile-stats">
-            <div class="profile-stat"><span>${fmt(profile.followers)}</span> seguidores</div>
-            <div class="profile-stat"><span>${fmt(profile.following)}</span> siguiendo</div>
-          </div>
-          ${profile.biography ? `<p style="margin-top:6px;font-size:12px;color:#555">${profile.biography.substring(0,100)}</p>` : ''}
-        </div>
-      </div>`;
-
-    // Stats
-    document.getElementById('stats-section').innerHTML = `
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Videos analizados</div>
-          <div class="stat-value">${stats.filtered_videos}</div>
-          <div class="stat-sub">de ${stats.total_videos} totales</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Vistas promedio</div>
-          <div class="stat-value">${fmt(stats.avg_views)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Likes promedio</div>
-          <div class="stat-value">${fmt(stats.avg_likes)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Engagement medio</div>
-          <div class="stat-value">${stats.avg_engagement}%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Mejor día</div>
-          <div class="stat-value" style="font-size:16px">${stats.best_day}</div>
-          <div class="stat-sub">para publicar</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Mejor hora</div>
-          <div class="stat-value" style="font-size:16px">${stats.best_hour}</div>
-          <div class="stat-sub">para publicar</div>
-        </div>
-      </div>`;
-
-    // Gráfico
-    document.getElementById('chart-section').innerHTML = `
-      <div class="chart-card">
-        <h3>Vistas y likes a lo largo del tiempo</h3>
-        <div class="chart-wrapper"><canvas id="viewsChart"></canvas></div>
-      </div>`;
-    renderChart(chart_data);
-
-    // Posts
-    document.getElementById('posts-section').innerHTML = `
-      <div class="posts-header">Top ${posts.length} videos</div>
-      <div class="posts-grid">
-        ${posts.map((p, i) => `
-          <div class="post-card">
-            <div class="thumb-wrapper" onclick="openVideo('${p.shortcode}')">
-              <img class="post-thumb" src="${p.thumbnail}" onerror="this.src='https://via.placeholder.com/300x500/f0f0f0/999?text=Sin+imagen'" loading="lazy"/>
-              <span class="rank-badge">#${i+1}</span>
-              <div class="play-overlay"><div class="play-btn">▶</div></div>
-            </div>
-            <div class="post-body">
-              <div class="post-stats">
-                <span class="post-stat">👁 ${fmt(p.views)}</span>
-                <span class="post-stat">❤️ ${fmt(p.likes)}</span>
-                <span class="post-stat">💬 ${fmt(p.comments)}</span>
-                <span class="engagement-badge">${p.engagement}%</span>
-              </div>
-              <div class="post-date">${fmtDate(p.date)}</div>
-              ${p.caption ? `<div class="post-caption">${p.caption.replace(/</g,'&lt;')}</div>` : ''}
-              <div class="post-actions">
-                <span class="action-btn" onclick="openVideo('${p.shortcode}')">▶ Preview</span>
-                <span class="action-btn copy" onclick="copyUrl('${p.post_url}', this)">🔗 Copiar URL</span>
-                <a class="action-btn" href="${p.post_url}" target="_blank">↗ Ver</a>
-              </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>`;
-
-  } catch (err) {
-    document.getElementById('posts-section').innerHTML = `<div class="status error">⚠️ No se pudo conectar con el servidor.<br><small>${err.message}</small></div>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Analizar";
-  }
-}
-
-document.getElementById("username").addEventListener("keydown", e => {
-  if (e.key === "Enter") buscar();
-});
+let urls = [];
+let jobId = null;
 
 function toggleMenu() {
   const btn = document.getElementById('hamburger');
@@ -389,12 +221,72 @@ document.addEventListener('click', e => {
     document.getElementById('toolsDropdown').classList.remove('open');
   }
 });
+
+
+function procesar() {
+  urls = document.getElementById("input").value
+    .split("\n")
+    .map(u => u.trim())
+    .filter(u => u.includes("http"));
+
+  let html = "";
+
+  urls.forEach((u,i)=>{
+    html += `<div class="video">🎬 ${i+1}: ${u}</div>`;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+async function descargar() {
+
+  const res = await fetch("http://localhost:3000/download", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ urls })
+  });
+
+  const data = await res.json();
+  jobId = data.jobId;
+
+  track();
+}
+
+async function track() {
+
+  const bar = document.getElementById("bar");
+  const status = document.getElementById("status");
+
+  const interval = setInterval(async () => {
+
+    const res = await fetch(`http://localhost:3000/status/${jobId}`);
+    const data = await res.json();
+
+    bar.style.width = data.progress + "%";
+    status.innerText = data.progress + "% - " + data.status;
+
+    let html = "";
+
+    data.items.forEach((v,i)=>{
+      let icon = "⏳";
+      if(v.status==="done") icon="✅";
+      if(v.status==="error") icon="❌";
+
+      html += `<div class="video">${icon} ${v.title || v.url}</div>`;
+    });
+
+    document.getElementById("lista").innerHTML = html;
+
+    if(data.status==="done"){
+      clearInterval(interval);
+      status.innerText = "🎉 Descarga completada";
+      bar.style.width = "100%";
+    }
+
+  },1000);
+}
+
 </script>
-<div style="text-align:center;padding:2rem 1rem 1.5rem;font-size:12px;color:#aaa;">
-  © 2026 wkivan · Instats
-  <div style="margin-top:8px;">
-    🛠️ <a href="https://instabulk.onrender.com" target="_blank" style="color:#8B5CF6;text-decoration:none;font-weight:600;">Más herramientas de wkivan</a>
-  </div>
-</div>
+
 </body>
 </html>
