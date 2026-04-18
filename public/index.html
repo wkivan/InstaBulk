@@ -189,20 +189,17 @@ footer {
 
   <div class="card">
     <h2>🔥 Cómo funciona</h2>
-    <p>1. Copia el link de Instagram</p>
-    <p>2. Pégalo aquí arriba</p>
-    <p>3. Descarga el video en segundos</p>
-  </div>
-
-  <div class="card">
-    <h2>📈 SEO Keywords</h2>
-    <p>instagram downloader, descargar reels instagram, video downloader, instagram video sin marca de agua</p>
+    <p>1. Copia el link de Instagram del reel o video que quieras descargar y pégalo en el cuadro de texto de arriba. Puedes añadir tantos links como quieras, uno por línea.</p>
+    <br>
+    <p>2. Cuando tengas todos los links listos, pulsa <strong>Procesar</strong> para que el sistema los prepare.</p>
+    <br>
+    <p>3. Espera unos segundos y pulsa <strong>Descargar</strong>. Los videos se descargarán sin marca de agua, gratis y al instante.</p>
   </div>
 
 </div>
 
 <footer>
-  Instagram Downloader PRO © 2026
+  InstaBulk © 2026 · by wkivan
 </footer>
 
 <script>
@@ -225,6 +222,7 @@ document.addEventListener('click', e => {
 });
 
 
+function procesar() {
   urls = document.getElementById("input").value
     .split("\n")
     .map(u => u.trim())
