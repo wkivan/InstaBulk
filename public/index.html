@@ -246,7 +246,7 @@ function procesar() {
 
 async function descargar() {
 
-  const res = await fetch("http://localhost:3000/download", {
+  const res = await fetch("/download", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ urls })
@@ -265,7 +265,7 @@ async function track() {
 
   const interval = setInterval(async () => {
 
-    const res = await fetch(`http://localhost:3000/status/${jobId}`);
+    const res = await fetch(`/status/${jobId}`);
     const data = await res.json();
 
     bar.style.width = data.progress + "%";
@@ -287,6 +287,11 @@ async function track() {
       clearInterval(interval);
       status.innerText = "🎉 Descarga completada";
       bar.style.width = "100%";
+
+      document.getElementById("lista").innerHTML += `
+        <br><a href="/download-zip/${jobId}">
+          <button style="background:#00aaff; margin-top:10px;">📦 Descargar ZIP</button>
+        </a>`;
     }
 
   },1000);
