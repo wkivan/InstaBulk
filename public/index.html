@@ -186,6 +186,7 @@ footer {
     <p id="status"></p>
 
     <div id="lista"></div>
+    <div id="zip-btn"></div>
   </div>
 
   <div class="card">
@@ -288,9 +289,9 @@ async function track() {
       status.innerText = "🎉 Descarga completada";
       bar.style.width = "100%";
 
-      document.getElementById("lista").innerHTML += `
+      document.getElementById("zip-btn").innerHTML = `
         <br><a href="/download-zip/${jobId}">
-          <button style="background:#00aaff; margin-top:10px;">📦 Descargar ZIP</button>
+          <button style="background:#00aaff; margin-top:10px; font-size:16px; padding:14px 24px;">📦 Descargar ZIP</button>
         </a>`;
     }
 
