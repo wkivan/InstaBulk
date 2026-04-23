@@ -279,7 +279,11 @@ async function track() {
       if(v.status==="done") icon="✅";
       if(v.status==="error") icon="❌";
 
-      html += `<div class="video">${icon} ${v.title || v.url}</div>`;
+      const dlBtn = v.status === "done"
+        ? `<a href="/video/${v.file}" download style="margin-left:10px;"><button style="background:#00ffcc;padding:6px 12px;font-size:12px;margin-top:0;">⬇️ Descargar</button></a>`
+        : "";
+
+      html += `<div class="video" style="display:flex;align-items:center;justify-content:space-between;">${icon} ${v.title || v.url}${dlBtn}</div>`;
     });
 
     document.getElementById("lista").innerHTML = html;
